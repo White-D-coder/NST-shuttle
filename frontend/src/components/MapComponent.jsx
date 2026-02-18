@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import useSocket from '../hooks/useSocket';
 import api from '../services/api';
@@ -145,6 +145,16 @@ const MapComponent = () => {
                         opacity={0.7}
                     />
                 )}
+
+                {/* Visualizing Stop Radius (Geofence) */}
+                {selectedRoute && selectedRoute.stops.map((stop, idx) => (
+                    <Circle
+                        key={`circle-${idx}`}
+                        center={[stop.lat, stop.lng]}
+                        radius={stop.arrivalRadius || 50}
+                        pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.1, weight: 1 }}
+                    />
+                ))}
             </MapContainer>
         </div>
     );

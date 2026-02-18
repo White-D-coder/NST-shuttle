@@ -1,6 +1,43 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Trip = require('../models/Trip');
+const Stop = require('../models/Stop'); // Feature 3: Hotspot Alert
+
+// In-memory store for real-time data
+let stopsCache = [];
+const stopStudentMap = new Map(); // StopId -> Set<UserId>
+
+// Load stops into cache on startup
+const loadStops = async () => {
+    try {
+        stopsCache = await Stop.find();
+        stopsCache.forEach(stop => {
+            if (!stopStudentMap.has(String(stop.stopId))) {
+                stopStudentMap.set(String(stop.stopId), new Set());
+            }
+        });
+        console.log(`Loaded ${stopsCache.length} stops for tracking.`);
+    } catch (err) {
+        console.error("Error loading stops:", err);
+    }
+};
+loadStops();
+
+// Helper: Haversine Distance (in meters)
+const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+};
 
 const socketManager = (io) => {
     // Middleware for Socket Auth
