@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const Signup = () => {
     const [formData, setFormData] = useState({
         name: '',
+        email: '',
         password: '',
         role: 'user' // Default role
     });
@@ -18,7 +19,7 @@ const Signup = () => {
         e.preventDefault();
         setError('');
         try {
-            await register(formData.name, null, formData.password, 'user');
+            await register(formData.name, formData.email, formData.password, 'user');
             // Register function in AuthContext already sets user and token
             navigate('/home');
         } catch (err) {
@@ -39,6 +40,16 @@ const Signup = () => {
                             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Email</label>
+                        <input
+                            type="email"
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
                         />
                     </div>

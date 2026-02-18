@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-    const [formData, setFormData] = useState({ name: '', password: '' });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -12,7 +12,7 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            await login(formData.name, formData.password);
+            await login(formData.email, formData.password);
             navigate('/home');
         } catch (err) {
             setError(err.response?.data?.error || 'Login failed');
@@ -26,12 +26,12 @@ const Login = () => {
                 {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-700 mb-2">Username / Name</label>
+                        <label className="block text-gray-700 mb-2">Email</label>
                         <input
-                            type="text"
+                            type="email"
                             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
                         />
                     </div>

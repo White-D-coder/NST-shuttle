@@ -5,14 +5,12 @@ const jwt = require('jsonwebtoken');
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Please add a name'],
-        unique: true
+        required: [true, 'Please add a name']
     },
     email: {
         type: String,
-        // Email is now optional/secondary, but let's keep it unique if provided
+        required: [true, 'Please add an email'],
         unique: true,
-        sparse: true, // Allows multiple null/undefined values
         match: [
             /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
             'Please add a valid email'

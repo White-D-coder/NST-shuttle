@@ -137,7 +137,14 @@ const MapComponent = () => {
                     </Marker>
                 ))}
 
-                {/* Polyline would go here based on route coordinates */}
+                {selectedRoute && selectedRoute.stops && selectedRoute.stops.length > 0 && (
+                    <Polyline
+                        positions={selectedRoute.stops.map(stop => [stop.lat, stop.lng])}
+                        color="blue"
+                        weight={4}
+                        opacity={0.7}
+                    />
+                )}
             </MapContainer>
         </div>
     );
