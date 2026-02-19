@@ -4,18 +4,18 @@ const LandingPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 font-sans">
             {/* Navbar */}
-            <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto">
+            <nav className="flex flex-col md:flex-row justify-between items-center p-6 max-w-7xl mx-auto gap-4">
                 <div className="text-2xl font-bold text-blue-700 tracking-tight">
                     NST Shuttle
                 </div>
-                <div className="space-x-4">
-                    <Link to="/login" className="px-5 py-2.5 text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition border border-blue-200">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto items-center">
+                    <Link to="/login" className="w-full sm:w-auto text-center px-5 py-2.5 text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition border border-blue-200">
                         Passenger Login
                     </Link>
-                    <Link to="/login" className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition">
+                    <Link to="/login" className="w-full sm:w-auto text-center px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition">
                         Driver Login
                     </Link>
-                    <Link to="/signup" className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
+                    <Link to="/signup" className="w-full sm:w-auto text-center px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
                         Sign Up
                     </Link>
                 </div>

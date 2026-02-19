@@ -12,7 +12,8 @@ exports.register = async (req, res, next) => {
             name,
             email,
             password,
-            role
+            role,
+            isVerified: email.endsWith('@adypu.edu.in')
         });
 
         sendTokenResponse(user, 200, res);
