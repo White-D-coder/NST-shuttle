@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Trip = require('../models/Trip');
 const Stop = require('../models/Stop'); // Feature 3: Hotspot Alert
@@ -10,8 +11,21 @@ const stopStudentMap = new Map(); // StopId -> Set<UserId>
 // Load stops into cache on startup
 const loadStops = async () => {
     try {
-        stopsCache = await Stop.find();
-        stopsCache.forEach(stop => {
+        // Wait for DB connection if not ready
+        if (mongoose.connection.readyState !== 1) {
+            await new Promise(resolve => {
+                const interval = setInterval(() => {
+                    if (mongoose.connection.readyState === 1) {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, 500);
+            });
+        }
+
+        const stops = await Stop.find();
+        stopsCache = stops;
+        stops.forEach(stop => {
             if (!stopStudentMap.has(String(stop.stopId))) {
                 stopStudentMap.set(String(stop.stopId), new Set());
             }
@@ -21,6 +35,8 @@ const loadStops = async () => {
         console.error("Error loading stops:", err);
     }
 };
+
+// Call loadStops but handled gracefully
 loadStops();
 
 // Helper: Haversine Distance (in meters)

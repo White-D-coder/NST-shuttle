@@ -41,27 +41,6 @@ const MapComponent = () => {
         fetchRoutes();
     }, []);
 
-    // Student Location Tracking
-    useEffect(() => {
-        if (!socket || !isConnected) return;
-
-        const geoId = navigator.geolocation.watchPosition(
-            (pos) => {
-                const { latitude, longitude } = pos.coords;
-                // Emit location to server for counting
-                socket.emit('student_location_update', {
-                    lat: latitude,
-                    lng: longitude
-                });
-                console.log('Sent Location:', latitude, longitude);
-            },
-            (err) => console.error('Location Error:', err),
-            { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
-        );
-
-        return () => navigator.geolocation.clearWatch(geoId);
-    }, [socket, isConnected]);
-
     useEffect(() => {
         if (!socket || !isConnected) return;
 
@@ -111,18 +90,58 @@ const MapComponent = () => {
                     attribution='&copy; Google Maps'
                 />
 
+                {/* Pickup / Dropoff Location Marker */}
+                <Marker position={position}>
+                    <Popup>Morning Pickup / Afternoon Drop</Popup>
+                </Marker>
+
+                {/* Second Stop Marker */}
+                <Marker position={[18.61419, 73.91192]}>
+                    <Popup>Second Stop</Popup>
+                </Marker>
+
+                {/* College Location Marker */}
+                <Marker position={[18.621845, 73.912615]}>
+                    <Popup>College (Morning Drop / Afternoon Pick)</Popup>
+                </Marker>
+
+                {/* Route Path (Polyline) */}
+                <Polyline
+                    positions={[
+                        [18.611693, 73.911511], [18.612021, 73.911545], [18.612298, 73.911583], [18.612512, 73.911624],
+                        [18.612807, 73.91168], [18.613083, 73.911746], [18.613358, 73.911812], [18.613496, 73.911843],
+                        [18.61415, 73.91196], [18.614188, 73.911962], [18.614428, 73.911975], [18.614752, 73.911978],
+                        [18.615016, 73.911559], [18.615336, 73.910921], [18.615364, 73.910863], [18.615436, 73.910703],
+                        [18.61551, 73.910522], [18.615603, 73.910275], [18.615692, 73.910023], [18.615705, 73.909993],
+                        [18.61574, 73.909955], [18.615773, 73.909952], [18.616803, 73.910232], [18.61755, 73.910411],
+                        [18.61822, 73.910613], [18.618762, 73.910776], [18.618885, 73.910813], [18.618953, 73.91083],
+                        [18.61899, 73.910853], [18.619014, 73.910892],
+
+                        [18.618991, 73.910859], // Start
+                        [18.619513, 73.912209], // Turn Right & Straight
+                        [18.620047, 73.912007], // Turn Left & Straight
+                        [18.619549, 73.910765], // Turn Left & Straight
+                        [18.620781, 73.910187], // Straight to Circle Start
+                        [18.621178, 73.911109], // Circle Point 1
+                        [18.621405, 73.911227], // Circle Apex (Middle)
+                        [18.621393, 73.911514], // Circle Point 2
+                        [18.621845, 73.912615]  // Final Destination
+                    ]}
+                    pathOptions={{ color: '#4285F4', weight: 6, opacity: 0.6 }}
+                />
+
                 {busLocation && (
                     <Marker
                         position={busLocation.position}
                         icon={L.divIcon({
                             className: 'bus-icon',
                             html: `
-                                <div style="transform: rotate(${busLocation.heading || 0}deg); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                    <svg viewBox="0 0 24 24" fill="#4285F4" stroke="white" stroke-width="2" style="width: 100%; height: 100%; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));">
-                                        <path d="M12 2L2 22L12 18L22 22L12 2Z" />
-                                    </svg>
-                                </div>
-                            `,
+                               <div style="transform: rotate(${busLocation.heading || 0}deg); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                   <svg viewBox="0 0 24 24" fill="#4285F4" stroke="white" stroke-width="2" style="width: 100%; height: 100%; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));">
+                                       <path d="M12 2L2 22L12 18L22 22L12 2Z" />
+                                   </svg>
+                               </div>
+                           `,
                             iconSize: [40, 40],
                             iconAnchor: [20, 20]
                         })}
@@ -136,15 +155,6 @@ const MapComponent = () => {
                         <Popup>{stop.name}</Popup>
                     </Marker>
                 ))}
-
-                {selectedRoute && selectedRoute.stops && selectedRoute.stops.length > 0 && (
-                    <Polyline
-                        positions={selectedRoute.stops.map(stop => [stop.lat, stop.lng])}
-                        color="blue"
-                        weight={4}
-                        opacity={0.7}
-                    />
-                )}
 
                 {/* Visualizing Stop Radius (Geofence) */}
                 {selectedRoute && selectedRoute.stops.map((stop, idx) => (
